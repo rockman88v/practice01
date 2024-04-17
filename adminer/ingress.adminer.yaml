@@ -1,0 +1,24 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ingress-adminer
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    # this should be covered by the annotation on the other ingress
+    # since it will renew the same certificate
+    # cert-manager.io/cluster-issuer: letsencrypt-prod
+    ingress.kubernetes.io/configuration-snippet: |
+        rewrite ^/(.*)$ http://adminer.codestar.vn/$1 permanent;
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: "adminer.codestar.vn"
+    http:
+      paths:
+      - pathType: Prefix
+        path: "/"
+        backend:
+          service:
+            name: adminer-svc
+            port:
+              number: 80
